@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Vibration permission: used when the user taps the urge button for haptic feedback. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- Declare XR support. Setting required to false ensures the app still works on phones. -->
+    <uses-feature android:name="android.software.xr.immersive" android:required="false" />
+
+    <application
+        android:name=".NailBiteBreakerApplication"
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.NailBiteBreaker">
+
+        <!-- Single-Activity architecture: all screens are Compose composables
+             hosted inside MainActivity. -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>

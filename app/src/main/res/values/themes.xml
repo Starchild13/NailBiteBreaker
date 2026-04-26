@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Base application theme. The app uses Jetpack Compose's Material 3
+        theming (Theme.kt) for all UI rendering. This XML theme only serves
+        as the window background before Compose draws its first frame, so we
+        use the lightweight NoActionBar variant to avoid a double title-bar flash.
+    -->
+    <style name="Theme.NailBiteBreaker" parent="android:Theme.Material.Light.NoActionBar">
+    </style>
+</resources>
