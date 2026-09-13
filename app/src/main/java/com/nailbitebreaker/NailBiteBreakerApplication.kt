@@ -42,10 +42,8 @@ class NailBiteBreakerApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        // Start all agents when the application process is created.
-        orchestrator.start()
 
-        // Enable debug logs for RevenueCat during development
+        // Enable debug logs for RevenueCat
         Purchases.logLevel = LogLevel.DEBUG
 
         // Initialize RevenueCat
@@ -56,9 +54,13 @@ class NailBiteBreakerApplication : Application() {
         // For ad attribution & tracking
         Purchases.sharedInstance.collectDeviceIdentifiers()
 
-        // Initialize AdMob
+        // Initialize everything else in the background to prevent main thread blocking
         val backgroundScope = CoroutineScope(Dispatchers.IO)
         backgroundScope.launch {
+            // Start all agents
+            orchestrator.start()
+
+            // Initialize AdMob
             MobileAds.initialize(this@NailBiteBreakerApplication) {}
         }
     }
