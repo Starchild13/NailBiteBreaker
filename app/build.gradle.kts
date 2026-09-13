@@ -106,4 +106,10 @@ dependencies {
     implementation(libs.androidx.adaptive.navigation)
     implementation(libs.androidx.adaptive.navigation.suite)
     implementation(libs.androidx.window.core)
+
+    // RevenueCat
+    implementation(libs.revenuecat.purchases)
+    implementation(libs.revenuecat.purchases.ui)
+    implementation(libs.revenuecat.purchases.admob)
+    implementation(libs.play.services.ads)
 }

@@ -52,20 +52,37 @@ import com.nailbitebreaker.ui.PATTERN_GAME_ROUTE
 import com.nailbitebreaker.ui.PatternMemoryGame
 import com.nailbitebreaker.ui.SOCIAL_CHAT_ROUTE
 import com.nailbitebreaker.ui.SocialChatScreen
+import com.nailbitebreaker.ui.TIP_JAR_ROUTE
+import com.nailbitebreaker.ui.TipJarScreen
 import com.nailbitebreaker.ui.theme.NailBiteBreakerTheme
+import com.revenuecat.purchases.LogLevel
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.PurchasesConfiguration
+
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        Purchases.logLevel = LogLevel.DEBUG
+
+        Purchases.configure(
+            PurchasesConfiguration.Builder(
+                this,
+                "test_HbRnPcmfFTdxgynAdYFZIKHcFQi"
+            ).build()
+        )
+
         setContent {
             NailBiteBreakerTheme {
-                // Launch the app directly. 
-                // Wrapping in Subspace at the root causes blank screens on non-XR devices.
                 NailBiteBreakerApp()
             }
         }
     }
 }
+
+
 
 @Composable
 private fun NailBiteBreakerApp() {
@@ -168,6 +185,9 @@ private fun AppNavHost(navController: NavController) {
         }
         composable(PROGRESS_ROUTE) {
             ProgressScreen(onBack = goHome)
+        }
+        composable(TIP_JAR_ROUTE) {
+            TipJarScreen(onBack = goHome)
         }
     }
 }

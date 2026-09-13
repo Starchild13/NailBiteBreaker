@@ -55,6 +55,7 @@ import androidx.navigation.NavController
 import com.nailbitebreaker.ui.theme.CoralButton
 import com.nailbitebreaker.ui.theme.Lavender
 import com.nailbitebreaker.ui.theme.TealAccent
+import com.nailbitebreaker.ui.TIP_JAR_ROUTE
 import com.nailbitebreaker.viewmodel.HomeViewModel
 
 /** Navigation route constant used by [MainActivity]'s NavController. */
@@ -263,6 +264,16 @@ fun HomeScreen(
                 color = Lavender
             )
         }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // ── Tip Jar / RevenueCat integration ─────────────────────────────────
+        Text(
+            text = "Support the App",
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.clickable { navController.navigate(TIP_JAR_ROUTE) },
+            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
     }

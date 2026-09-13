@@ -4,6 +4,12 @@ import android.app.Application
 import com.nailbitebreaker.agents.AgentOrchestrator
 import com.nailbitebreaker.data.HabitDatabase
 import com.nailbitebreaker.data.HabitRepository
+import com.revenuecat.purchases.Purchases
+import com.revenuecat.purchases.PurchasesConfiguration
+import com.google.android.gms.ads.MobileAds
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * Custom Application class that acts as the root dependency container.
@@ -37,6 +43,19 @@ class NailBiteBreakerApplication : Application() {
         super.onCreate()
         // Start all agents when the application process is created.
         orchestrator.start()
+
+        // Initialize RevenueCat
+        Purchases.configure(
+            PurchasesConfiguration.Builder(this, "goog_your_revenuecat_api_key").build()
+        )
+        // For ad attribution
+        Purchases.sharedInstance.collectDeviceIdentifiers()
+
+        // Initialize AdMob
+        val backgroundScope = CoroutineScope(Dispatchers.IO)
+        backgroundScope.launch {
+            MobileAds.initialize(this@NailBiteBreakerApplication) {}
+        }
     }
 
     override fun onTerminate() {
@@ -44,4 +63,22 @@ class NailBiteBreakerApplication : Application() {
         // Gracefully stop all agents and cancel coroutine scopes.
         orchestrator.stop()
     }
+
+    /**
+     * Example of how to use RevenueCat AdMob tracking:
+     *
+     * In your Activity/Fragment:
+     *
+     * val adRequest = AdRequest.Builder().build()
+     * InterstitialAd.loadAndTrack(
+     *     context,
+     *     "your-ad-unit-id",
+     *     adRequest,
+     *     object : InterstitialAdLoadCallback() {
+     *         override fun onAdLoaded(ad: InterstitialAd) {
+     *             ad.show(activity)
+     *         }
+     *     }
+     * )
+     */
 }

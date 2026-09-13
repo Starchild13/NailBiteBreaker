@@ -18,6 +18,8 @@ xr-compose         = "1.0.0-alpha12"
 xr-material3       = "1.0.0-alpha16"
 xr-extensions      = "1.2.0"
 adaptive           = "1.0.0"
+revenuecat         = "10.21.1"
+play-services-ads  = "23.5.0"
 
 [libraries]
 androidx-core-ktx           = { group = "androidx.core",            name = "core-ktx",                   version.ref = "core-ktx"           }
@@ -52,6 +54,12 @@ xr-scenecore                = { group = "androidx.xr.scenecore",    name = "scen
 xr-compose                  = { group = "androidx.xr.compose",      name = "compose",                     version.ref = "xr-compose"         }
 xr-material3                = { group = "androidx.xr.compose.material3", name = "material3",               version.ref = "xr-material3"       }
 xr-extensions               = { group = "com.android.extensions.xr", name = "extensions-xr",              version.ref = "xr-extensions"      }
+
+# RevenueCat
+revenuecat-purchases        = { group = "com.revenuecat.purchases", name = "purchases",                   version.ref = "revenuecat"         }
+revenuecat-purchases-ui     = { group = "com.revenuecat.purchases", name = "purchases-ui",                version.ref = "revenuecat"         }
+revenuecat-purchases-admob  = { group = "com.revenuecat.purchases", name = "purchases-admob",             version.ref = "revenuecat"         }
+play-services-ads           = { group = "com.google.android.gms", name = "play-services-ads",             version.ref = "play-services-ads"  }
 
 [plugins]
 android-application = { id = "com.android.application",    version.ref = "agp"    }
