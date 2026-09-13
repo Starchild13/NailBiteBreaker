@@ -54,6 +54,7 @@ import com.nailbitebreaker.agents.RewardInfo
 import com.nailbitebreaker.agents.TechniqueType
 import com.nailbitebreaker.ui.theme.TealAccent
 import com.nailbitebreaker.viewmodel.CoachViewModel
+import com.nailbitebreaker.ui.Screen
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -156,7 +157,7 @@ fun CoachScreen(
             Spacer(modifier = Modifier.height(10.dp))
 
             OutlinedButton(
-                onClick = { navController.navigate(BREATHE_ROUTE) },
+                onClick = { navController.navigate(Screen.Breathe.route) },
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(14.dp)
             ) {

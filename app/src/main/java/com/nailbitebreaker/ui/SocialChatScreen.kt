@@ -46,8 +46,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nailbitebreaker.agents.ChatMessage
 import com.nailbitebreaker.viewmodel.SocialSupportViewModel
 
-const val SOCIAL_CHAT_ROUTE = "social_chat"
-
 /**
  * Social Chat Screen - Interactive chat with the Social Support Agent.
  */

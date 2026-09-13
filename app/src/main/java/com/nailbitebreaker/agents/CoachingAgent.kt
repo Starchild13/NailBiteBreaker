@@ -1,8 +1,6 @@
 package com.nailbitebreaker.agents
 
-import com.nailbitebreaker.ui.PATTERN_GAME_ROUTE
-import com.nailbitebreaker.ui.REACTION_GAME_ROUTE
-import com.nailbitebreaker.ui.SOCIAL_CHAT_ROUTE
+import com.nailbitebreaker.ui.Screen
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -66,19 +64,19 @@ class CoachingAgent(
             title = "Chat with a Friend",
             description = "You don't have to do this alone. Chat with your supportive AI friend to validate your feelings and get reinforcement to stay strong.",
             type = TechniqueType.AFFIRMATION,
-            actionRoute = SOCIAL_CHAT_ROUTE
+            actionRoute = Screen.Social.route
         ),
         CoachingTechnique(
             title = "Reaction Tap Game",
             description = "Engage your brain and hands immediately! Tap the green circles appearing randomly on the screen and avoid the red ones. This rapid task overrides the habit loop.",
             type = TechniqueType.DISTRACTION,
-            actionRoute = REACTION_GAME_ROUTE
+            actionRoute = Screen.ReactionGame.route
         ),
         CoachingTechnique(
             title = "Pattern Memory",
             description = "A \"Simon Says\" style game for your fingers. Watch the pattern and repeat it. This cognitive task requires focus, making it a powerful tool against urges.",
             type = TechniqueType.DISTRACTION,
-            actionRoute = PATTERN_GAME_ROUTE
+            actionRoute = Screen.PatternGame.route
         ),
         CoachingTechnique(
             title = "Box Breathing",

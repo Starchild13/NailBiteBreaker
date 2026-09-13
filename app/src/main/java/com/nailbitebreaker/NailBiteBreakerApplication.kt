@@ -6,6 +6,7 @@ import com.nailbitebreaker.data.HabitDatabase
 import com.nailbitebreaker.data.HabitRepository
 import com.revenuecat.purchases.Purchases
 import com.revenuecat.purchases.PurchasesConfiguration
+import com.revenuecat.purchases.LogLevel
 import com.google.android.gms.ads.MobileAds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -44,11 +45,15 @@ class NailBiteBreakerApplication : Application() {
         // Start all agents when the application process is created.
         orchestrator.start()
 
+        // Enable debug logs for RevenueCat during development
+        Purchases.logLevel = LogLevel.DEBUG
+
         // Initialize RevenueCat
         Purchases.configure(
-            PurchasesConfiguration.Builder(this, "goog_your_revenuecat_api_key").build()
+            PurchasesConfiguration.Builder(this, "goog_OffhHxMHhTRoSMOoLNbRKUfMQNz").build()
         )
-        // For ad attribution
+        
+        // For ad attribution & tracking
         Purchases.sharedInstance.collectDeviceIdentifiers()
 
         // Initialize AdMob

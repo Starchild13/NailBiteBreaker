@@ -38,41 +38,30 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.nailbitebreaker.ui.BREATHE_ROUTE
-import com.nailbitebreaker.ui.COACH_ROUTE
 import com.nailbitebreaker.ui.BreathingExercise
 import com.nailbitebreaker.ui.CoachScreen
-import com.nailbitebreaker.ui.HOME_ROUTE
 import com.nailbitebreaker.ui.HomeScreen
-import com.nailbitebreaker.ui.PROGRESS_ROUTE
 import com.nailbitebreaker.ui.ProgressScreen
-import com.nailbitebreaker.ui.REACTION_GAME_ROUTE
 import com.nailbitebreaker.ui.ReactionGame
-import com.nailbitebreaker.ui.PATTERN_GAME_ROUTE
 import com.nailbitebreaker.ui.PatternMemoryGame
-import com.nailbitebreaker.ui.SOCIAL_CHAT_ROUTE
 import com.nailbitebreaker.ui.SocialChatScreen
-import com.nailbitebreaker.ui.TIP_JAR_ROUTE
 import com.nailbitebreaker.ui.TipJarScreen
+import com.nailbitebreaker.ui.Screen
 import com.nailbitebreaker.ui.theme.NailBiteBreakerTheme
 import com.revenuecat.purchases.LogLevel
 import com.revenuecat.purchases.Purchases
-import com.revenuecat.purchases.PurchasesConfiguration
+import com.revenuecat.purchases.CustomerInfo
+import com.revenuecat.purchases.models.StoreTransaction
+import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIPurchasesAPI
+import com.revenuecat.purchases.ui.revenuecatui.Paywall
+import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
+import com.revenuecat.purchases.ui.revenuecatui.PaywallOptions
 
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        Purchases.logLevel = LogLevel.DEBUG
-
-        Purchases.configure(
-            PurchasesConfiguration.Builder(
-                this,
-                "test_HbRnPcmfFTdxgynAdYFZIKHcFQi"
-            ).build()
-        )
 
         setContent {
             NailBiteBreakerTheme {
@@ -102,7 +91,7 @@ private fun NailBiteBreakerApp() {
                     onClick = {
                         if (currentRoute != tab.route) {
                             navController.navigate(tab.route) {
-                                popUpTo(HOME_ROUTE) { inclusive = true }
+                                popUpTo(Screen.Main.route) { inclusive = true }
                             }
                         }
                     }
@@ -119,28 +108,29 @@ private fun NailBiteBreakerApp() {
     }
 }
 
+@OptIn(ExperimentalPreviewRevenueCatUIPurchasesAPI::class)
 @Composable
 private fun AppNavHost(navController: NavController) {
     val goHome = {
-        navController.navigate(HOME_ROUTE) {
-            popUpTo(HOME_ROUTE) { inclusive = true }
+        navController.navigate(Screen.Main.route) {
+            popUpTo(Screen.Main.route) { inclusive = true }
         }
     }
 
     NavHost(
         navController = navController as androidx.navigation.NavHostController,
-        startDestination = HOME_ROUTE
+        startDestination = Screen.Main.route
     ) {
-        composable(HOME_ROUTE) {
+        composable(Screen.Main.route) {
             HomeScreen(navController = navController)
         }
-        composable(COACH_ROUTE) {
+        composable(Screen.Coach.route) {
             CoachScreen(
                 navController = navController,
                 onBack = goHome
             )
         }
-        composable(BREATHE_ROUTE) {
+        composable(Screen.Breathe.route) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -174,20 +164,33 @@ private fun AppNavHost(navController: NavController) {
                 BreathingExercise(modifier = Modifier.fillMaxWidth())
             }
         }
-        composable(REACTION_GAME_ROUTE) {
+        composable(Screen.ReactionGame.route) {
             ReactionGame(onBack = goHome)
         }
-        composable(PATTERN_GAME_ROUTE) {
+        composable(Screen.PatternGame.route) {
             PatternMemoryGame(onBack = goHome)
         }
-        composable(SOCIAL_CHAT_ROUTE) {
+        composable(Screen.Social.route) {
             SocialChatScreen(onBack = goHome)
         }
-        composable(PROGRESS_ROUTE) {
+        composable(Screen.Progress.route) {
             ProgressScreen(onBack = goHome)
         }
-        composable(TIP_JAR_ROUTE) {
-            TipJarScreen(onBack = goHome)
+        composable(Screen.Paywall.route) {
+            Paywall(
+                options = PaywallOptions.Builder(
+                    dismissRequest = { navController.popBackStack() }
+                )
+                    .setListener(
+                        object : PaywallListener {
+                            override fun onPurchaseCompleted(customerInfo: CustomerInfo, storeTransaction: StoreTransaction) {
+                                navController.popBackStack()
+                            }
+                            override fun onRestoreCompleted(customerInfo: CustomerInfo) {}
+                        }
+                    )
+                    .build()
+            )
         }
     }
 }
@@ -197,7 +200,7 @@ private enum class NavTab(
     val icon: ImageVector,
     val label: String
 ) {
-    HOME(HOME_ROUTE, Icons.Filled.Home, "Home"),
-    COACH(COACH_ROUTE, Icons.Filled.Psychology, "Coach"),
-    PROGRESS(PROGRESS_ROUTE, Icons.Filled.ShowChart, "Progress")
+    HOME(Screen.Main.route, Icons.Filled.Home, "Home"),
+    COACH(Screen.Coach.route, Icons.Filled.Psychology, "Coach"),
+    PROGRESS(Screen.Progress.route, Icons.Filled.ShowChart, "Progress")
 }

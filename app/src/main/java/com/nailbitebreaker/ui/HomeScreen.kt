@@ -55,11 +55,7 @@ import androidx.navigation.NavController
 import com.nailbitebreaker.ui.theme.CoralButton
 import com.nailbitebreaker.ui.theme.Lavender
 import com.nailbitebreaker.ui.theme.TealAccent
-import com.nailbitebreaker.ui.TIP_JAR_ROUTE
 import com.nailbitebreaker.viewmodel.HomeViewModel
-
-/** Navigation route constant used by [MainActivity]'s NavController. */
-const val HOME_ROUTE = "home"
 
 /**
  * Predefined trigger-context labels shown as selectable filter chips.
@@ -85,7 +81,7 @@ private val TRIGGERS = listOf(
  * [AgentEvent.UrgeDetected] event that immediately activates [CoachingAgent]
  * and persists the event via [ProgressAgent].
  *
- * @param navController Routes the user to [COACH_ROUTE] or [BREATHE_ROUTE].
+ * @param navController Routes the user to coaching or breathing screens.
  * @param viewModel     Injected automatically by Compose's ViewModel factory.
  */
 @OptIn(ExperimentalLayoutApi::class)
@@ -212,7 +208,7 @@ fun HomeScreen(
                 onClick = {
                     viewModel.reportUrge(selectedTrigger)
                     showFeedback = true
-                    navController.navigate(COACH_ROUTE)
+                    navController.navigate(Screen.Coach.route)
                 },
                 modifier = Modifier
                     .size(148.dp)
@@ -254,7 +250,7 @@ fun HomeScreen(
 
         // ── Quick breathing shortcut ──────────────────────────────────────────
         OutlinedButton(
-            onClick = { navController.navigate(BREATHE_ROUTE) },
+            onClick = { navController.navigate(Screen.Breathe.route) },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(14.dp)
         ) {
@@ -271,21 +267,10 @@ fun HomeScreen(
         Text(
             text = "Support the App",
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.clickable { navController.navigate(TIP_JAR_ROUTE) },
+            modifier = Modifier.clickable { navController.navigate(Screen.Paywall.route) },
             color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f)
         )
 
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
-
-// ── Sibling route constants (declared here to avoid circular imports) ──────────
-
-/** Navigation route for CoachScreen. */
-const val COACH_ROUTE = "coach"
-
-/** Navigation route for the standalone breathing overlay. */
-const val BREATHE_ROUTE = "breathe"
-
-/** Navigation route for ProgressScreen. */
-const val PROGRESS_ROUTE = "progress"

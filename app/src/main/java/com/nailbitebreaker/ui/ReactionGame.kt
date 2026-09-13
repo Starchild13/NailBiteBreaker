@@ -45,9 +45,6 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
-/** Route constant for navigation. */
-const val REACTION_GAME_ROUTE = "reaction_game"
-
 /**
  * Data class representing a target circle in the reaction game.
  */

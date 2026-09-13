@@ -10,11 +10,14 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.revenuecat.purchases.CustomerInfo
+import com.revenuecat.purchases.models.StoreTransaction
+import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIPurchasesAPI
 import com.revenuecat.purchases.ui.revenuecatui.Paywall
+import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
 import com.revenuecat.purchases.ui.revenuecatui.PaywallOptions
 
-const val TIP_JAR_ROUTE = "tip_jar"
-
+@OptIn(ExperimentalPreviewRevenueCatUIPurchasesAPI::class)
 @Composable
 fun TipJarScreen(
     onBack: () -> Unit
@@ -25,7 +28,23 @@ fun TipJarScreen(
         Paywall(
             options = PaywallOptions.Builder(
                 dismissRequest = onBack
-            ).build()
+            )
+                .setListener(
+                    object : PaywallListener {
+                        override fun onPurchaseCompleted(
+                            customerInfo: CustomerInfo,
+                            storeTransaction: StoreTransaction
+                        ) {
+                            // Optional: handle successful purchase
+                            onBack()
+                        }
+
+                        override fun onRestoreCompleted(customerInfo: CustomerInfo) {
+                            // Optional: handle restore
+                        }
+                    }
+                )
+                .build()
         )
 
         IconButton(

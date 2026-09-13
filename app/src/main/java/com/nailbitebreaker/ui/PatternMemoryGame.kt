@@ -47,9 +47,6 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
-/** Route constant for navigation. */
-const val PATTERN_GAME_ROUTE = "pattern_game"
-
 /**
  * Pattern Memory Game - A "Simon Says" style exercise to engage brain and hands.
  */
