@@ -10,7 +10,10 @@ import com.revenuecat.purchases.LogLevel
 import com.google.android.gms.ads.MobileAds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.yield
 
 /**
  * Custom Application class that acts as the root dependency container.
@@ -43,25 +46,33 @@ class NailBiteBreakerApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        // Enable debug logs for RevenueCat
+        // 1. High priority UI-critical settings (Fast)
         Purchases.logLevel = LogLevel.DEBUG
 
-        // Initialize RevenueCat
-        Purchases.configure(
-            PurchasesConfiguration.Builder(this, "goog_OffhHxMHhTRoSMOoLNbRKUfMQNz").build()
-        )
-        
-        // For ad attribution & tracking
-        Purchases.sharedInstance.collectDeviceIdentifiers()
+        // 2. Use a dedicated background scope for staggered initialization.
+        // This avoids blocking the main thread during the critical app launch window.
+        val initScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+        initScope.launch {
+            // Configure RevenueCat (Network/Disk IO is internal, but we trigger it early)
+            Purchases.configure(
+                PurchasesConfiguration.Builder(this@NailBiteBreakerApplication, "goog_OffhHxMHhTRoSMOoLNbRKUfMQNz").build()
+            )
+            Purchases.sharedInstance.collectDeviceIdentifiers()
+            
+            // Allow Main thread to process first frame/layout
+            yield()
 
-        // Initialize everything else in the background to prevent main thread blocking
-        val backgroundScope = CoroutineScope(Dispatchers.IO)
-        backgroundScope.launch {
-            // Start all agents
+            // 3. Start Agent System
+            // computational tasks (like initial streak calculation) are offloaded
             orchestrator.start()
 
-            // Initialize AdMob
-            MobileAds.initialize(this@NailBiteBreakerApplication) {}
+            // Allow UI to breathe
+            yield()
+
+            // 4. Initialize AdMob (IO-heavy initialization)
+            withContext(Dispatchers.IO) {
+                MobileAds.initialize(this@NailBiteBreakerApplication) {}
+            }
         }
     }
 
