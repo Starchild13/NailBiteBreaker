@@ -11,6 +11,6 @@
         <item name="postSplashScreenTheme">@style/Theme.NailBiteBreaker.Main</item>
     </style>
 
-    <style name="Theme.NailBiteBreaker.Main" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.NailBiteBreaker.Main" parent="android:Theme.DeviceDefault.Light.NoActionBar">
     </style>
 </resources>
