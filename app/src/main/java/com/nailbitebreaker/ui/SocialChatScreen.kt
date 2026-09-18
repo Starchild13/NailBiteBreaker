@@ -46,8 +46,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.nailbitebreaker.agents.ChatMessage
 import com.nailbitebreaker.viewmodel.SocialSupportViewModel
 
+
+
 /**
- * Social Chat Screen - Interactive chat with the Social Support Agent.
+ * Social Chat Screen
+ *
+ * Interactive chat with the Social Support Agent.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,22 +60,54 @@ fun SocialChatScreen(
     viewModel: SocialSupportViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    var inputText by remember { mutableStateOf("") }
+
+    var inputText by remember {
+        mutableStateOf("")
+    }
+
     val listState = rememberLazyListState()
 
-    // Auto-scroll to bottom when new messages arrive
-    LaunchedEffect(state.messages.size, state.isTyping) {
-        if (state.messages.isNotEmpty()) {
-            listState.animateScrollToItem(state.messages.size)
+    /*
+     * Automatically scroll to the newest message.
+     *
+     * We intentionally use scrollToItem() instead of
+     * animateScrollToItem(). This avoids leaving an animation
+     * coroutine running against the LazyColumn when the user
+     * navigates away from this screen.
+     */
+    LaunchedEffect(
+        state.messages.size,
+        state.isTyping
+    ) {
+        val messageCount = state.messages.size
+
+        if (messageCount > 0) {
+            val targetIndex = if (state.isTyping) {
+                // The typing indicator is added after the messages.
+                messageCount
+            } else {
+                // Last actual message.
+                messageCount - 1
+            }
+
+            if (targetIndex >= 0) {
+                listState.scrollToItem(targetIndex)
+            }
         }
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
+            .background(
+                MaterialTheme.colorScheme.background
+            )
     ) {
+
+        // ---------------------------------------------------------
         // Header
+        // ---------------------------------------------------------
+
         Surface(
             tonalElevation = 4.dp,
             shadowElevation = 4.dp,
@@ -80,38 +116,73 @@ fun SocialChatScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp, vertical = 12.dp),
+                    .padding(
+                        horizontal = 8.dp,
+                        vertical = 12.dp
+                    ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+
+                IconButton(
+                    onClick = onBack
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back"
+                    )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
+
+                Spacer(
+                    modifier = Modifier.width(8.dp)
+                )
+
                 Box(
                     modifier = Modifier
                         .size(40.dp)
-                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
+                        .background(
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            shape = CircleShape
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("🤝", fontSize = 20.sp)
+                    Text(
+                        text = "🤝",
+                        fontSize = 20.sp
+                    )
                 }
-                Spacer(modifier = Modifier.width(12.dp))
+
+                Spacer(
+                    modifier = Modifier.width(12.dp)
+                )
+
                 Column {
                     Text(
                         text = "Supportive Friend",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold
                     )
+
                     Text(
-                        text = if (state.isTyping) "Typing..." else "Online",
+                        text = if (state.isTyping) {
+                            "Typing..."
+                        } else {
+                            "Online"
+                        },
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (state.isTyping) MaterialTheme.colorScheme.primary else Color.Gray
+                        color = if (state.isTyping) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            Color.Gray
+                        }
                     )
                 }
             }
         }
 
+        // ---------------------------------------------------------
         // Chat Messages
+        // ---------------------------------------------------------
+
         LazyColumn(
             state = listState,
             modifier = Modifier
@@ -120,53 +191,93 @@ fun SocialChatScreen(
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(state.messages) { message ->
-                ChatBubble(message)
+
+            items(
+                items = state.messages,
+                key = { message ->
+                    /*
+                     * If ChatMessage has a unique ID, use:
+                     *
+                     * key = { it.id }
+                     *
+                     * hashCode() is used here as a safe fallback
+                     * with the current ChatMessage model.
+                     */
+                    message.hashCode()
+                }
+            ) { message ->
+
+                ChatBubble(
+                    message = message
+                )
             }
+
+            // Typing indicator
             if (state.isTyping) {
-                item {
+                item(
+                    key = "typing_indicator"
+                ) {
                     TypingIndicator()
                 }
             }
         }
 
+        // ---------------------------------------------------------
         // Input Area
+        // ---------------------------------------------------------
+
         Surface(
             tonalElevation = 8.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
             Row(
                 modifier = Modifier
-                    .padding(16.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 OutlinedTextField(
                     value = inputText,
-                    onValueChange = { inputText = it },
-                    placeholder = { Text("Talk to me...") },
+                    onValueChange = {
+                        inputText = it
+                    },
+                    placeholder = {
+                        Text("Talk to me...")
+                    },
                     modifier = Modifier.weight(1f),
                     shape = RoundedCornerShape(24.dp),
                     colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.outline
+                        focusedBorderColor =
+                            MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor =
+                            MaterialTheme.colorScheme.outline
                     ),
                     maxLines = 3
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+
+                Spacer(
+                    modifier = Modifier.width(12.dp)
+                )
+
                 IconButton(
                     onClick = {
-                        if (inputText.isNotBlank()) {
-                            viewModel.sendMessage(inputText)
+                        val message = inputText.trim()
+
+                        if (message.isNotEmpty()) {
+                            viewModel.sendMessage(message)
                             inputText = ""
                         }
                     },
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.primary, CircleShape)
                         .size(48.dp)
+                        .background(
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = CircleShape
+                        )
                 ) {
                     Icon(
-                        Icons.AutoMirrored.Filled.Send,
+                        imageVector = Icons.AutoMirrored.Filled.Send,
                         contentDescription = "Send",
                         tint = MaterialTheme.colorScheme.onPrimary
                     )
@@ -176,35 +287,64 @@ fun SocialChatScreen(
     }
 }
 
-
-
+/**
+ * Individual chat message bubble.
+ */
 @Composable
-fun ChatBubble(message: ChatMessage) {
-    val alignment = if (message.isFromAgent) Alignment.CenterStart else Alignment.CenterEnd
-    val containerColor = if (message.isFromAgent) 
-        MaterialTheme.colorScheme.secondaryContainer 
-    else 
+fun ChatBubble(
+    message: ChatMessage
+) {
+    val alignment = if (message.isFromAgent) {
+        Alignment.CenterStart
+    } else {
+        Alignment.CenterEnd
+    }
+
+    val containerColor = if (message.isFromAgent) {
+        MaterialTheme.colorScheme.secondaryContainer
+    } else {
         MaterialTheme.colorScheme.primary
-    
-    val contentColor = if (message.isFromAgent) 
-        MaterialTheme.colorScheme.onSecondaryContainer 
-    else 
+    }
+
+    val contentColor = if (message.isFromAgent) {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    } else {
         MaterialTheme.colorScheme.onPrimary
+    }
 
-    val shape = if (message.isFromAgent)
-        RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp)
-    else
-        RoundedCornerShape(20.dp, 20.dp, 4.dp, 20.dp)
+    val shape = if (message.isFromAgent) {
+        RoundedCornerShape(
+            topStart = 4.dp,
+            topEnd = 20.dp,
+            bottomEnd = 20.dp,
+            bottomStart = 20.dp
+        )
+    } else {
+        RoundedCornerShape(
+            topStart = 20.dp,
+            topEnd = 20.dp,
+            bottomEnd = 4.dp,
+            bottomStart = 20.dp
+        )
+    }
 
-    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = alignment) {
+    Box(
+        modifier = Modifier.fillMaxWidth(),
+        contentAlignment = alignment
+    ) {
         Surface(
             color = containerColor,
             shape = shape,
-            modifier = Modifier.widthIn(max = 280.dp)
+            modifier = Modifier.widthIn(
+                max = 280.dp
+            )
         ) {
             Text(
                 text = message.text,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
+                modifier = Modifier.padding(
+                    horizontal = 16.dp,
+                    vertical = 10.dp
+                ),
                 style = MaterialTheme.typography.bodyLarge,
                 color = contentColor
             )
@@ -212,19 +352,33 @@ fun ChatBubble(message: ChatMessage) {
     }
 }
 
+/**
+ * Typing indicator displayed while the agent is responding.
+ */
 @Composable
 fun TypingIndicator() {
     Surface(
-        color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f),
-        shape = RoundedCornerShape(4.dp, 16.dp, 16.dp, 16.dp),
+        color = MaterialTheme.colorScheme.secondaryContainer.copy(
+            alpha = 0.5f
+        ),
+        shape = RoundedCornerShape(
+            topStart = 4.dp,
+            topEnd = 16.dp,
+            bottomEnd = 16.dp,
+            bottomStart = 16.dp
+        ),
         modifier = Modifier.width(60.dp)
     ) {
         Text(
             text = "...",
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 4.dp
+            ),
             fontSize = 24.sp,
             fontWeight = FontWeight.Bold,
             color = MaterialTheme.colorScheme.onSecondaryContainer
         )
     }
 }
+

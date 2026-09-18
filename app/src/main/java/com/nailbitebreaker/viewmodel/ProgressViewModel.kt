@@ -24,4 +24,11 @@ class ProgressViewModel(application: Application) : AndroidViewModel(application
      * Updated automatically after every urge event is persisted to Room.
      */
     val stats: StateFlow<ProgressStats> = orchestrator.progressAgent.stats
+
+    /**
+     * Resets all progress data by clearing the database and refreshing stats to zero.
+     */
+    fun resetProgress() {
+        orchestrator.progressAgent.resetProgress()
+    }
 }

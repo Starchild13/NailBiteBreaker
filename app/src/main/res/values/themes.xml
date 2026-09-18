@@ -6,6 +6,11 @@
         as the window background before Compose draws its first frame, so we
         use the lightweight NoActionBar variant to avoid a double title-bar flash.
     -->
-    <style name="Theme.NailBiteBreaker" parent="android:Theme.Material.Light.NoActionBar">
+    <style name="Theme.NailBiteBreaker" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">#F8F5FF</item>
+        <item name="postSplashScreenTheme">@style/Theme.NailBiteBreaker.Main</item>
+    </style>
+
+    <style name="Theme.NailBiteBreaker.Main" parent="android:Theme.Material.Light.NoActionBar">
     </style>
 </resources>

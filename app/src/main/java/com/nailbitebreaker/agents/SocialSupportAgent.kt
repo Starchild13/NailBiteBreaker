@@ -1,6 +1,7 @@
 package com.nailbitebreaker.agents
 
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -66,7 +67,7 @@ class SocialSupportAgent(
     }
 
     private fun onUrgeDetected(trigger: String) {
-        agentScope.launch {
+        agentScope.launch(Dispatchers.Default) {
             val initialMessage = ChatMessage(
                 text = "Hey, I see you're feeling a bit triggered by $trigger. How are you holding up?",
                 isFromAgent = true
@@ -83,7 +84,7 @@ class SocialSupportAgent(
         val currentMsgs = _state.value.messages + userMsg
         _state.value = _state.value.copy(messages = currentMsgs, isTyping = true)
 
-        agentScope.launch {
+        agentScope.launch(Dispatchers.Default) {
             // Simulate "thinking" time
             kotlinx.coroutines.delay(1500)
             val response = ChatMessage(text = supportResponses.random(), isFromAgent = true)

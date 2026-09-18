@@ -1,21 +1,20 @@
 // App-level build script — declares all dependencies and Android build config.
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace   = "com.nailbitebreaker"
-    compileSdk  = 36
+    compileSdk  = 37
 
     defaultConfig {
         applicationId = "com.nailbitebreaker"
         minSdk        = 26
-        targetSdk     = 36
-        versionCode   = 7
-        versionName   = "1.0.7"
+        targetSdk     = 37
+        versionCode   = 11
+        versionName   = "1.0.11"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables { useSupportLibrary = true }
@@ -38,13 +37,13 @@ android {
 
             // Fix for "App Bundle contains native code, and you've not uploaded debug symbols"
             ndk {
-                debugSymbolLevel = "SYMBOL_TABLE"
+                debugSymbolLevel = "FULL"
             }
         }
         
         debug {
             ndk {
-                debugSymbolLevel = "SYMBOL_TABLE"
+                debugSymbolLevel = "FULL"
             }
         }
     }
@@ -54,8 +53,10 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
-    kotlinOptions {
-        jvmTarget = "17"
+    kotlin {
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+        }
     }
 
     buildFeatures { compose = true }
@@ -67,6 +68,7 @@ android {
 
 dependencies {
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.activity.compose)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.runtime.compose)
@@ -88,6 +90,8 @@ dependencies {
     ksp(libs.room.compiler)
 
     implementation(libs.coroutines.android)
+
+    implementation(libs.lottie.compose)
 
     debugImplementation(libs.compose.ui.tooling)
 
@@ -112,4 +116,15 @@ dependencies {
     implementation(libs.revenuecat.purchases.ui)
     implementation(libs.revenuecat.purchases.admob)
     implementation(libs.play.services.ads)
+
+    // Testing
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.kotlin)
+    androidTestImplementation(platform(libs.compose.bom))
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    androidTestImplementation(libs.androidx.compose.ui.test)
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

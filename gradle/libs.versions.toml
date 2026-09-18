@@ -2,27 +2,36 @@
 # Referenced from build.gradle.kts files using `libs.*` accessor syntax.
 
 [versions]
-agp                = "8.13.2"
-kotlin             = "2.0.21"
-ksp                = "2.0.21-1.0.26"
+agp                = "9.2.1"
+kotlin             = "2.4.20"
+ksp                = "2.3.2"
 compose-bom        = "2024.10.00"
-navigation-compose = "2.8.3"
-room               = "2.6.1"
-coroutines         = "1.9.0"
-lifecycle          = "2.8.6"
-core-ktx           = "1.13.1"
-activity-compose   = "1.9.3"
-xr-runtime         = "1.0.0-alpha12"
-xr-scenecore       = "1.0.0-alpha13"
-xr-compose         = "1.0.0-alpha12"
-xr-material3       = "1.0.0-alpha16"
-xr-extensions      = "1.2.0"
-adaptive           = "1.0.0"
+navigation-compose = "2.10.1"
+room               = "2.8.5"
+coroutines         = "1.11.0"
+lifecycle          = "2.11.0"
+core-ktx           = "1.19.0"
+core-splashscreen  = "1.2.0"
+activity-compose   = "1.13.0"
+xr-runtime         = "1.0.0-rc01"
+xr-scenecore       = "1.0.0-rc01"
+xr-compose         = "1.0.0-alpha17"
+xr-material3       = "1.0.0-alpha17"
+xr-extensions      = "1.4.0"
+adaptive           = "1.3.0"
 revenuecat         = "10.21.1"
-play-services-ads  = "23.5.0"
+play-services-ads  = "25.4.0"
+lottie             = "6.7.1"
+junit              = "4.13.2"
+androidx-test-ext  = "1.2.1"
+espresso           = "3.6.1"
+mockito            = "5.11.0"
+mockito-kotlin     = "5.3.1"
+
 
 [libraries]
 androidx-core-ktx           = { group = "androidx.core",            name = "core-ktx",                   version.ref = "core-ktx"           }
+androidx-core-splashscreen  = { group = "androidx.core",            name = "core-splashscreen",          version.ref = "core-splashscreen"  }
 androidx-activity-compose   = { group = "androidx.activity",        name = "activity-compose",            version.ref = "activity-compose"   }
 compose-bom                 = { group = "androidx.compose",         name = "compose-bom",                 version.ref = "compose-bom"        }
 compose-ui                  = { group = "androidx.compose.ui",      name = "ui"                                                              }
@@ -46,7 +55,7 @@ androidx-adaptive           = { group = "androidx.compose.material3.adaptive", n
 androidx-adaptive-layout    = { group = "androidx.compose.material3.adaptive", name = "adaptive-layout",    version.ref = "adaptive"           }
 androidx-adaptive-navigation = { group = "androidx.compose.material3.adaptive", name = "adaptive-navigation", version.ref = "adaptive"           }
 androidx-adaptive-navigation-suite = { group = "androidx.compose.material3", name = "material3-adaptive-navigation-suite", version.ref = "adaptive" }
-androidx-window-core        = { group = "androidx.window",          name = "window-core",                version = "1.3.0"                  }
+androidx-window-core        = { group = "androidx.window",          name = "window-core",                version = "1.5.1"                  }
 
 # XR SDK Libraries
 xr-runtime                  = { group = "androidx.xr.runtime",      name = "runtime",                     version.ref = "xr-runtime"         }
@@ -60,9 +69,17 @@ revenuecat-purchases        = { group = "com.revenuecat.purchases", name = "purc
 revenuecat-purchases-ui     = { group = "com.revenuecat.purchases", name = "purchases-ui",                version.ref = "revenuecat"         }
 revenuecat-purchases-admob  = { group = "com.revenuecat.purchases", name = "purchases-admob",             version.ref = "revenuecat"         }
 play-services-ads           = { group = "com.google.android.gms", name = "play-services-ads",             version.ref = "play-services-ads"  }
+lottie-compose              = { group = "com.airbnb.android", name = "lottie-compose", version.ref = "lottie" }
+junit                       = { group = "junit",                    name = "junit",                      version.ref = "junit"              }
+androidx-test-ext-junit     = { group = "androidx.test.ext",        name = "junit",                      version.ref = "androidx-test-ext"  }
+androidx-espresso-core      = { group = "androidx.test.espresso",   name = "espresso-core",               version.ref = "espresso"           }
+androidx-compose-ui-test    = { group = "androidx.compose.ui",      name = "ui-test-junit4"                                                  }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest"                                               }
+kotlinx-coroutines-test     = { group = "org.jetbrains.kotlinx",    name = "kotlinx-coroutines-test",     version.ref = "coroutines"         }
+mockito-core                = { group = "org.mockito",              name = "mockito-core",                version.ref = "mockito"            }
+mockito-kotlin              = { group = "org.mockito.kotlin",       name = "mockito-kotlin",              version.ref = "mockito-kotlin"     }
 
 [plugins]
 android-application = { id = "com.android.application",    version.ref = "agp"    }
-kotlin-android      = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 ksp                 = { id = "com.google.devtools.ksp",     version.ref = "ksp"    }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

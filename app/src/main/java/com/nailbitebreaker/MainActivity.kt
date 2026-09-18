@@ -3,9 +3,8 @@ package com.nailbitebreaker
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -48,19 +46,11 @@ import com.nailbitebreaker.ui.SocialChatScreen
 import com.nailbitebreaker.ui.TipJarScreen
 import com.nailbitebreaker.ui.Screen
 import com.nailbitebreaker.ui.theme.NailBiteBreakerTheme
-import com.revenuecat.purchases.LogLevel
-import com.revenuecat.purchases.Purchases
-import com.revenuecat.purchases.CustomerInfo
-import com.revenuecat.purchases.models.StoreTransaction
 import com.revenuecat.purchases.ui.revenuecatui.ExperimentalPreviewRevenueCatUIPurchasesAPI
-import com.revenuecat.purchases.ui.revenuecatui.Paywall
-import com.revenuecat.purchases.ui.revenuecatui.PaywallListener
-import com.revenuecat.purchases.ui.revenuecatui.PaywallOptions
-
-
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
         super.onCreate(savedInstanceState)
 
         setContent {
@@ -97,7 +87,7 @@ private fun NailBiteBreakerApp() {
                     }
                 )
             }
-        }
+        },
     ) {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -177,20 +167,7 @@ private fun AppNavHost(navController: NavController) {
             ProgressScreen(onBack = goHome)
         }
         composable(Screen.Paywall.route) {
-            Paywall(
-                options = PaywallOptions.Builder(
-                    dismissRequest = { navController.popBackStack() }
-                )
-                    .setListener(
-                        object : PaywallListener {
-                            override fun onPurchaseCompleted(customerInfo: CustomerInfo, storeTransaction: StoreTransaction) {
-                                navController.popBackStack()
-                            }
-                            override fun onRestoreCompleted(customerInfo: CustomerInfo) {}
-                        }
-                    )
-                    .build()
-            )
+            TipJarScreen { navController.popBackStack() }
         }
     }
 }
@@ -202,5 +179,6 @@ private enum class NavTab(
 ) {
     HOME(Screen.Main.route, Icons.Filled.Home, "Home"),
     COACH(Screen.Coach.route, Icons.Filled.Psychology, "Coach"),
+    @Suppress("DEPRECATION")
     PROGRESS(Screen.Progress.route, Icons.Filled.ShowChart, "Progress")
 }

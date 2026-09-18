@@ -2,6 +2,7 @@ package com.nailbitebreaker.agents
 
 import com.nailbitebreaker.data.HabitRepository
 import com.nailbitebreaker.data.UrgEvent
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -40,7 +41,9 @@ data class ProgressStats(
 class ProgressAgent(
     private val agentScope: CoroutineScope,
     private val eventBus: SharedFlow<AgentEvent>,
-    private val repository: HabitRepository
+    private val repository: HabitRepository,
+    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : Agent {
 
     override val agentId: String = "progress-agent"
@@ -66,18 +69,31 @@ class ProgressAgent(
     }
 
     private suspend fun persistAndRefresh(event: AgentEvent.UrgeDetected) {
-        repository.insertUrge(
-            UrgEvent(
-                timestamp = event.timestamp,
-                trigger = event.trigger,
-                resolved = false
+        withContext(ioDispatcher) {
+            repository.insertUrge(
+                UrgEvent(
+                    timestamp = event.timestamp,
+                    trigger = event.trigger,
+                    resolved = false
+                )
             )
-        )
+        }
         refreshStats()
     }
 
-    private suspend fun refreshStats() = withContext(Dispatchers.Default) {
-        val allEvents = repository.getAllUrges()
+    fun resetProgress() {
+        agentScope.launch {
+            withContext(ioDispatcher) {
+                repository.clearAll()
+            }
+            refreshStats()
+        }
+    }
+
+    private suspend fun refreshStats() = withContext(defaultDispatcher) {
+        val allEvents = withContext(ioDispatcher) {
+            repository.getAllUrges()
+        }
         if (allEvents.isEmpty()) {
             _stats.value = ProgressStats()
             return@withContext
@@ -99,7 +115,6 @@ class ProgressAgent(
         val dayMs = 86_400_000L
 
         // 1. Map all events to their start-of-day for O(1) lookup
-        // We yield periodically if the list is large to remain cooperative.
         val urgeDays = HashSet<Long>(allEvents.size)
         allEvents.forEachIndexed { index, event ->
             urgeDays.add(event.timestamp.toStartOfDay())
@@ -108,9 +123,13 @@ class ProgressAgent(
 
         val todayCount = allEvents.count { it.timestamp >= startOfToday }
 
-        // 2. Compute Current Streak (consecutive zero-urge days counting back from yesterday)
+        // 2. Compute Current Streak
+        // We only count a streak if the user has logged something within the last 30 days
+        // to avoid "zombie streaks" from abandoned app installs.
         var currentStreak = 0
-        if (todayCount == 0) {
+        val lastUrgeTimestamp = allEvents.maxOf { it.timestamp }
+        
+        if (todayCount == 0 && (System.currentTimeMillis() - lastUrgeTimestamp) < (30 * dayMs)) {
             var cursor = startOfToday - dayMs
             val earliestTimestamp = allEvents.minOf { it.timestamp }
             
@@ -130,10 +149,13 @@ class ProgressAgent(
         }
 
         // 4. Full History for Calendar & Longest Streak
+        // Cap history to 365 days to prevent ANRs if the DB has very old/corrupt timestamps
         val dailyStreaks = mutableMapOf<Long, Int>()
-        val earliest = allEvents.minOf { it.timestamp }.toStartOfDay()
+        val oneYearAgo = startOfToday - (365 * dayMs)
+        val earliestEvent = allEvents.minOf { it.timestamp }.toStartOfDay()
+        val earliestToProcess = maxOf(earliestEvent, oneYearAgo)
         
-        var dayCursor = earliest
+        var dayCursor = earliestToProcess
         var runningStreak = 0
         var streakCount = 0
         

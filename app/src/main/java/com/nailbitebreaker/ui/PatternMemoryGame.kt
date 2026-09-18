@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * Pattern Memory Game - A "Simon Says" style exercise to engage brain and hands.
@@ -72,12 +73,12 @@ fun PatternMemoryGame(
     LaunchedEffect(gameState) {
         if (gameState == PatternGameState.SHOWING_SEQUENCE) {
             feedbackText = "Watch carefully!"
-            delay(1000)
+            delay(1000.milliseconds)
             for (index in sequence) {
                 activeButton = index
-                delay(600)
+                delay(600.milliseconds)
                 activeButton = -1
-                delay(200)
+                delay(200.milliseconds)
             }
             userSequence.clear()
             gameState = PatternGameState.USER_INPUT
